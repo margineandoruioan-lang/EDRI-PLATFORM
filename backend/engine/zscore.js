@@ -1,5 +1,4 @@
-Lipește în engine/zscore.js:
-javascriptconst WEIGHTS = {
+const WEIGHTS = {
   X1: 1.2,
   X2: 1.4,
   X3: 3.3,
@@ -24,37 +23,33 @@ function calculateZScore(financials) {
   } = financials;
 
   if (!totalAssets || totalAssets === 0) {
-    throw new Error('Total Active (totalAssets) nu poate fi 0');
+    throw new Error('Total Active nu poate fi 0');
   }
   if (!totalLiabilities || totalLiabilities === 0) {
-    throw new Error('Total Datorii (totalLiabilities) nu poate fi 0');
+    throw new Error('Total Datorii nu poate fi 0');
   }
 
-  const X1 = workingCapital    / totalAssets;
-  const X2 = retainedEarnings  / totalAssets;
-  const X3 = ebit              / totalAssets;
+  const X1 = workingCapital / totalAssets;
+  const X2 = retainedEarnings / totalAssets;
+  const X3 = ebit / totalAssets;
   const X4 = marketValueEquity / totalLiabilities;
-  const X5 = revenue           / totalAssets;
+  const X5 = revenue / totalAssets;
 
-  const Z = (WEIGHTS.X1 * X1)
-           + (WEIGHTS.X2 * X2)
-           + (WEIGHTS.X3 * X3)
-           + (WEIGHTS.X4 * X4)
-           + (WEIGHTS.X5 * X5);
+  const Z = (1.2*X1) + (1.4*X2) + (3.3*X3) + (0.6*X4) + (1.0*X5);
 
   let zone, riskLevel, recommendation;
-  if (Z > THRESHOLDS.SAFE) {
-    zone           = 'SAFE';
-    riskLevel      = 'Scăzut';
-    recommendation = 'Compania este financiar sănătoasă. Continuați monitorizarea periodică.';
-  } else if (Z >= THRESHOLDS.GREY) {
-    zone           = 'GREY';
-    riskLevel      = 'Mediu';
-    recommendation = 'Zona de incertitudine. Monitorizare atentă și măsuri preventive recomandate.';
+  if (Z > 2.99) {
+    zone = 'SAFE';
+    riskLevel = 'Scazut';
+    recommendation = 'Compania este financiar sanatoasa.';
+  } else if (Z >= 1.81) {
+    zone = 'GREY';
+    riskLevel = 'Mediu';
+    recommendation = 'Zona de incertitudine.';
   } else {
-    zone           = 'DANGER';
-    riskLevel      = 'Ridicat';
-    recommendation = 'Risc ridicat de insolvență. Acțiuni imediate necesare.';
+    zone = 'DANGER';
+    riskLevel = 'Ridicat';
+    recommendation = 'Risc ridicat de insolventa.';
   }
 
   return {
@@ -62,22 +57,8 @@ function calculateZScore(financials) {
     zone,
     riskLevel,
     recommendation,
-    breakdown: {
-      X1: parseFloat(X1.toFixed(6)),
-      X2: parseFloat(X2.toFixed(6)),
-      X3: parseFloat(X3.toFixed(6)),
-      X4: parseFloat(X4.toFixed(6)),
-      X5: parseFloat(X5.toFixed(6)),
-    },
-    weighted: {
-      X1: parseFloat((WEIGHTS.X1 * X1).toFixed(6)),
-      X2: parseFloat((WEIGHTS.X2 * X2).toFixed(6)),
-      X3: parseFloat((WEIGHTS.X3 * X3).toFixed(6)),
-      X4: parseFloat((WEIGHTS.X4 * X4).toFixed(6)),
-      X5: parseFloat((WEIGHTS.X5 * X5).toFixed(6)),
-    },
-    thresholds: THRESHOLDS,
+    breakdown: { X1, X2, X3, X4, X5 },
   };
 }
 
-module.exports = { calculateZScore, WEIGHTS, THRESHOLDS };
+module.exports = { calculateZScore };
