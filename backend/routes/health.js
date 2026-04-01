@@ -10,16 +10,4 @@ router.get('/', async (req, res) => {
     service:   'EDRI Backend',
     supabase:  'unknown',
   };
-
-  try {
-    const { error } = await supabase.from('profiles').select('id').limit(1);
-    status.supabase = error ? `error: ${error.message}` : 'connected';
-  } catch (e) {
-    status.supabase = `error: ${e.message}`;
-  }
-
-  const httpStatus = status.supabase.startsWith('error') ? 503 : 200;
-  res.status(httpStatus).json(status);
-});
-
-module.exports = router;
+  

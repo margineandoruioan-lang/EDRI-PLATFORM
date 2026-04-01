@@ -1,4 +1,5 @@
-const WEIGHTS = {
+Lipește în engine/zscore.js:
+javascriptconst WEIGHTS = {
   X1: 1.2,
   X2: 1.4,
   X3: 3.3,
