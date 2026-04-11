@@ -5,7 +5,7 @@ const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
 app.use(helmet());
 app.use(cors({
@@ -13,7 +13,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -22,10 +22,13 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-app.use('/api/health',  require('./routes/health'));
-app.use('/api/zscore',  require('./routes/zscore'));
-app.use('/api/reports', require('./routes/reports'));
-app.use('/api/search',  require('./routes/search'));
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok', project: 'EDRI', timestamp: new Date().toISOString() });
+});
+
+app.get('/api/decisions', (req, res) => {
+  res.json({ decisions: [], message: 'EDRI Backend live' });
+});
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
@@ -33,12 +36,9 @@ app.use((req, res) => {
 
 app.use((err, req, res, next) => {
   console.error('[ERROR]', err.message);
-  res.status(500).json({ error: 'Internal server error', details: err.message });
+  res.status(500).json({ error: 'Internal server error' });
 });
 
 app.listen(PORT, () => {
   console.log(`✅ EDRI Backend running on port ${PORT}`);
-  console.log(`🔍 Search API: ${process.env.OPENAPI_RO_KEY ? 'configurat' : '⚠️ LIPSĂ OPENAPI_RO_KEY'}`);
 });
-
-module.exports = app;
